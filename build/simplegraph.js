@@ -110,7 +110,7 @@ Matrix.Build = function () {
     var matrix = new Matrix();
     for (var row = 0; row < 4; row++) {
         for (var col = 0; col < 4; col++) {
-            matrix.SetElement(row, col, arguments[col * 4 + row]);
+            matrix.SetElement(row, col, arguments[row * 4 + col]);
         }
     }
     return matrix;
@@ -171,7 +171,7 @@ $(function() {
         context.fillText(name, location.X(), location.Y());
     }
 
-    function renderCanvas(plotlist, matrix, el, viewRotation) {
+    function renderCanvas(plotlist, el, viewRotation) {
         el.width = el.width;
 
         var x_axis = Vector(1, 0, 0);
@@ -198,8 +198,7 @@ $(function() {
         drawLabel(context, z_axis_t, "Z", "rgb(0, 0, 255)");
 
         _(_.pairs(plotlist)).each(function (pair) {
-            var t = model_to_view.Multiply(matrix);
-            var endpoint = t.Multiply(pair[1]);
+            var endpoint = model_to_view.Multiply(pair[1]);
             drawVector(context, origin_t, endpoint, "ff00ff");
             drawLabel(context, endpoint, pair[0], "ff00ff");
         });
@@ -208,8 +207,8 @@ $(function() {
     _($('canvas')).each(function (el) {
         var plotlist = eval('(' + $(el).data('plotlist') + ')');
         var matrix = eval($(el).data('transform'));
-        var viewRotation = new Matrix();
-        renderCanvas(plotlist, matrix, el, viewRotation);
+        var viewRotation = matrix;
+        renderCanvas(plotlist, el, viewRotation);
 
         var dragging = false;
         var x_rotation = 0;
@@ -223,7 +222,7 @@ $(function() {
                 var x_rotation = (e.pageX - previous_loc[0]) * (Math.PI / 180);
                 var y_rotation = (e.pageY - previous_loc[1]) * (Math.PI / 180);
                 viewRotation = viewRotation.Multiply(Matrix.RotateX(x_rotation)).Multiply(Matrix.RotateY(y_rotation));
-                renderCanvas(plotlist, matrix, el, viewRotation);
+                renderCanvas(plotlist, el, viewRotation);
             }
             previous_loc = [e.pageX, e.pageY];
         });

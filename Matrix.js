@@ -97,7 +97,7 @@ Matrix.Build = function () {
     var matrix = new Matrix();
     for (var row = 0; row < 4; row++) {
         for (var col = 0; col < 4; col++) {
-            matrix.SetElement(row, col, arguments[col * 4 + row]);
+            matrix.SetElement(row, col, arguments[row * 4 + col]);
         }
     }
     return matrix;
